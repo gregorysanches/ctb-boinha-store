@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SELVA COMBAT</title>
+  <style>
+    *{box-sizing:border-box}
+    :root{
+      --bg:#070707;--bg-soft:#111111;--card:#141414;--line:#2a2a2a;--text:#f6f3ea;--muted:#bdb6a6;
+      --gold:#d6a63b;--gold-2:#f1c86a;--gold-soft:rgba(214,166,59,.14);--danger:#d12f2f;--ok:#1e8e3e;
+    }
+    html{scroll-behavior:smooth}
+    body{margin:0;font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#050505 0%,#0a0a0a 100%);color:var(--text)}
+    a{text-decoration:none;color:inherit} button{cursor:pointer}
+    .wrap{width:min(1240px,92%);margin:0 auto}
+    .topbar{position:sticky;top:0;z-index:50;background:rgba(7,7,7,.96);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+    .topbar .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0}
+    .brand{display:flex;align-items:center;gap:14px}
+    .brand-mark{width:58px;height:58px;border-radius:14px;background:linear-gradient(145deg,#1b1b1b,#090909);border:1px solid rgba(214,166,59,.35);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+    .brand-mark img{width:100%;height:100%;object-fit:cover}
+    .brand-text strong{display:block;font-size:24px;line-height:1;font-weight:900;letter-spacing:.5px}
+    .brand-text span{display:block;font-size:12px;color:var(--muted);margin-top:4px}
+    .top-actions{display:flex;align-items:center;gap:12px}
+    .search-pill{display:flex;align-items:center;gap:10px;background:#121212;border:1px solid var(--line);padding:10px 14px;border-radius:14px;min-width:320px}
+    .search-pill input{width:100%;background:transparent;border:none;outline:none;color:#fff;font-size:14px}
+    .cart-btn{border:none;background:linear-gradient(180deg,var(--gold-2),var(--gold));color:#111;padding:12px 18px;border-radius:14px;font-weight:900}
+    .hero{padding:48px 0 28px;border-bottom:1px solid var(--line);background:radial-gradient(circle at top right, rgba(214,166,59,.18), transparent 28%),radial-gradient(circle at left center, rgba(214,166,59,.10), transparent 24%)}
+    .hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:28px;align-items:center}
+    .kicker{display:inline-block;padding:8px 12px;border-radius:999px;background:var(--gold-soft);border:1px solid rgba(214,166,59,.3);color:var(--gold-2);font-size:12px;font-weight:900;letter-spacing:.4px}
+    .hero h1{font-size:58px;line-height:.98;margin:16px 0 16px;font-weight:900;max-width:760px}.hero h1 span{color:var(--gold-2)}
+    .hero p{max-width:760px;color:var(--muted);font-size:18px;line-height:1.45;margin:0 0 22px}
+    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}.btn-main,.btn-ghost{border:none;padding:14px 18px;border-radius:14px;font-weight:900;font-size:14px}
+    .btn-main{background:linear-gradient(180deg,var(--gold-2),var(--gold));color:#111}.btn-ghost{background:#111;border:1px solid var(--line);color:#fff}
+    .quote-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.quote-card{padding:18px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));border-radius:22px;min-height:138px}
+    .quote-card strong{display:block;font-size:22px;line-height:1.1;margin-bottom:8px}.quote-card p{margin:0;color:var(--muted);font-size:14px}
+    .notice-bar{border-bottom:1px solid var(--line);background:#0d0d0d}.notice-bar .wrap{display:flex;justify-content:space-between;gap:16px;padding:13px 0;flex-wrap:wrap}
+    .notice{font-size:14px;color:var(--muted)} .notice strong{color:var(--gold-2)}
+    section{padding:34px 0}.section-head{display:flex;align-items:end;justify-content:space-between;gap:18px;flex-wrap:wrap;margin-bottom:18px}
+    .section-head h2{margin:0;font-size:34px;line-height:1.05}.section-head p{margin:6px 0 0;color:var(--muted)}
+    .category-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}.category-card{padding:20px;border-radius:22px;border:1px solid var(--line);background:#111;display:flex;flex-direction:column;justify-content:space-between;gap:16px;min-height:130px;transition:.2s ease}
+    .category-card:hover,.category-card.active{border-color:rgba(214,166,59,.45);background:linear-gradient(180deg,rgba(214,166,59,.14),rgba(255,255,255,.02))}
+    .category-card strong{font-size:24px;line-height:1.05}.category-card span{font-size:13px;color:var(--muted)}
+    .toolbar{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin:26px 0 18px}.toolbar-left{display:flex;gap:10px;flex-wrap:wrap}.toolbar-right{display:flex;gap:10px;flex-wrap:wrap}
+    .chip{padding:10px 14px;border-radius:999px;background:#121212;border:1px solid var(--line);color:#fff;font-weight:700;font-size:13px}.chip.active{background:var(--gold-soft);border-color:rgba(214,166,59,.45);color:var(--gold-2)}
+    .search-box,.select-box{padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:#101010;color:#fff;min-width:240px}
+    .product-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.product-card{border-radius:24px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(180deg,#151515,#0f0f0f)}
+    .product-image{aspect-ratio:1/1;background:#0d0d0d;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);overflow:hidden}.product-image img{width:100%;height:100%;object-fit:cover;display:block}
+    .img-fallback{padding:22px;color:#8f876f;text-align:center;font-size:14px}.thumbs{display:flex;gap:8px;overflow:auto;padding:10px;background:#0d0d0d;border-bottom:1px solid var(--line)}
+    .thumbs button{min-width:58px;width:58px;height:58px;border-radius:12px;border:2px solid transparent;overflow:hidden;background:#111;padding:0}.thumbs button.active{border-color:var(--gold)} .thumbs img{width:100%;height:100%;object-fit:cover}
+    .product-body{padding:18px}.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--gold-soft);border:1px solid rgba(214,166,59,.3);color:var(--gold-2);font-size:12px;font-weight:900;margin-bottom:8px}
+    .product-title{margin:0 0 8px;font-size:24px;line-height:1.08}.product-desc{margin:0;color:var(--muted);font-size:14px;min-height:58px}.price-row{margin-top:14px}.old{font-size:14px;color:#8a877c;text-decoration:line-through}.new{font-size:30px;font-weight:900;color:#fff;margin-top:3px}
+    .form-stack{display:grid;gap:12px;margin-top:16px}.field label{display:block;font-size:13px;color:#ddd5c2;margin-bottom:6px}.field select,.field input,.field textarea{width:100%;padding:12px;border-radius:12px;border:1px solid var(--line);background:#0e0e0e;color:#fff;font-size:15px}
+    .field textarea{min-height:100px;resize:vertical}.action-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}.btn-buy,.btn-add{border:none;padding:13px 16px;border-radius:14px;font-weight:900;font-size:14px}
+    .btn-buy{background:linear-gradient(180deg,var(--gold-2),var(--gold));color:#111}.btn-add{background:#181818;color:#fff;border:1px solid var(--line)}
+    .brand-section{display:grid;grid-template-columns:1fr 1fr;gap:18px}.brand-panel{padding:24px;border-radius:24px;border:1px solid var(--line);background:linear-gradient(180deg,rgba(214,166,59,.10),rgba(255,255,255,.02))}
+    .brand-panel h3{margin:0 0 10px;font-size:28px}.brand-panel p{margin:0;color:var(--muted);line-height:1.5}.manifesto{display:grid;gap:12px}.manifesto .line{padding:14px 16px;border:1px solid var(--line);border-radius:16px;background:#111;font-weight:800}
+    .cart-layout{display:grid;grid-template-columns:1.08fr .92fr;gap:20px}.panel{background:linear-gradient(180deg,#141414,#0f0f0f);border:1px solid var(--line);border-radius:24px;padding:20px}.panel h3{margin-top:0;font-size:26px}
+    .cart-item{border:1px solid var(--line);background:#101010;border-radius:18px;padding:14px;margin-bottom:12px}.cart-line{display:flex;justify-content:space-between;gap:10px;margin:8px 0;color:#ddd5c2;font-size:14px}
+    .qty{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:10px}.qty button{width:34px;height:34px;border-radius:10px;border:1px solid var(--line);background:#181818;color:#fff;font-weight:900}
+    .summary-box{display:grid;gap:12px}.success,.error,.warn{margin-top:12px;padding:12px;border-radius:14px;font-size:14px;display:none}.success{background:rgba(30,142,62,.15);border:1px solid rgba(30,142,62,.45);color:#b9f3c8}.error{background:rgba(209,47,47,.15);border:1px solid rgba(209,47,47,.45);color:#ffc8c8}.warn{background:rgba(214,166,59,.12);border:1px solid rgba(214,166,59,.35);color:#f5da9a}
+    .footer{padding:32px 0 46px;border-top:1px solid var(--line);color:#9f9989}.footer-grid{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
+    @media (max-width:1080px){.hero-grid,.brand-section,.cart-layout{grid-template-columns:1fr}.product-grid{grid-template-columns:repeat(2,1fr)}.category-grid{grid-template-columns:repeat(3,1fr)}.search-pill{min-width:0;flex:1}}
+    @media (max-width:760px){.topbar .wrap{align-items:flex-start;flex-direction:column}.top-actions{width:100%;flex-direction:column;align-items:stretch}.search-pill{min-width:0;width:100%}.hero h1{font-size:40px}.quote-grid,.product-grid,.category-grid,.brand-section,.action-row{grid-template-columns:1fr}.toolbar-right,.toolbar-left{width:100%}.search-box,.select-box{min-width:0;width:100%}.brand-mark{width:46px;height:46px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="wrap">
+      <div class="brand">
+        <div class="brand-mark">
+          <img src="logo/logo-selva-combat.png" alt="Logo SELVA COMBAT" onerror="this.style.display='none'; this.parentNode.innerHTML='🐆'; this.parentNode.style.fontSize='24px'; this.parentNode.style.color='var(--gold-2)';">
+        </div>
+        <div class="brand-text">
+          <strong>SELVA COMBAT</strong>
+          <span>Força da selva. Espírito de luta.</span>
+        </div>
+      </div>
+      <div class="top-actions">
+        <label class="search-pill">
+          <span>🔎</span>
+          <input id="top-search" type="text" placeholder="Buscar produto, modalidade ou equipamento">
+        </label>
+        <button class="cart-btn" onclick="document.getElementById('carrinho').scrollIntoView({behavior:'smooth'})">Carrinho (<span id="cart-count">0</span>)</button>
+      </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <span class="kicker">Marca brasileira de equipamentos de luta</span>
+        <h1><span>SELVA COMBAT</span><br>Força da selva. Espírito de luta.</h1>
+        <p>Nascida para lutar. A SELVA COMBAT foi criada para quem entra no treino e no combate com garra, presença e disciplina. Equipamentos para quem entra para vencer.</p>
+        <div class="hero-actions">
+          <a class="btn-main" href="#produtos">Ver catálogo</a>
+          <a class="btn-ghost" href="#identidade">Conhecer a marca</a>
+        </div>
+      </div>
+      <div class="quote-grid">
+        <div class="quote-card"><strong>Instinto de combate.</strong><p>Performance, identidade e presença para quem treina sério.</p></div>
+        <div class="quote-card"><strong>Nascida para lutar.</strong><p>Uma marca feita para atletas, alunos e apaixonados por luta.</p></div>
+        <div class="quote-card"><strong>Equipamentos para quem entra para vencer.</strong><p>Catálogo pensado para venda direta com evolução rápida.</p></div>
+        <div class="quote-card"><strong>A força da onça no combate.</strong><p>Brasil, agressividade controlada e mentalidade de superação.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="notice-bar">
+    <div class="wrap">
+      <div class="notice"><strong>Pedido mínimo:</strong> compras a partir de R$ 100,00.</div>
+      <div class="notice"><strong>Planilha:</strong> estrutura mantida com envio para o Apps Script atualizado.</div>
+    </div>
+  </div>
+
+  <section id="modalidades">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>Modalidades e categorias</h2>
+          <p>Organização pronta para computador e celular, separada por modalidade exatamente como você estruturou.</p>
+        </div>
+      </div>
+      <div class="category-grid" id="category-grid"></div>
+    </div>
+  </section>
+
+  <section id="produtos">
+    <div class="wrap">
+      <div class="section-head">
+        <div>
+          <h2>Catálogo de produtos</h2>
+          <p>Escolha modalidade, selecione o produto, ajuste cor, tamanho e quantidade.</p>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="toolbar-left" id="chips"></div>
+        <div class="toolbar-right">
+          <input id="search" class="search-box" placeholder="Pesquisar produtos">
+          <select id="sort" class="select-box">
+            <option value="relevancia">Ordenar: destaque</option>
+            <option value="menor">Menor preço</option>
+            <option value="maior">Maior preço</option>
+            <option value="nome">Nome A-Z</option>
+          </select>
+        </div>
+      </div>
+      <div id="product-grid" class="product-grid"></div>
+    </div>
+  </section>
+
+  <section id="identidade">
+    <div class="wrap brand-section">
+      <div class="brand-panel">
+        <h3>Manifesto da marca</h3>
+        <p>A SELVA COMBAT representa a força bruta controlada pela disciplina. Cada item do catálogo nasce com o mesmo propósito: entregar presença, resistência e identidade para quem luta de verdade. Não é só sobre equipamento. É sobre mentalidade.</p>
+      </div>
+      <div class="manifesto">
+        <div class="line">Força da selva. Espírito de luta.</div>
+        <div class="line">Instinto de combate.</div>
+        <div class="line">Nascida para lutar.</div>
+        <div class="line">Equipamentos para quem entra para vencer.</div>
+        <div class="line">A força da onça no combate.</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="carrinho">
+    <div class="wrap cart-layout">
+      <div class="panel">
+        <h3>Carrinho</h3>
+        <div id="cart-items"></div>
+        <div id="cart-warning" class="warn">O pedido mínimo para finalizar é de R$ 100,00.</div>
+      </div>
+      <div class="panel">
+        <h3>Finalizar pedido</h3>
+        <div id="summary" class="summary-box"></div>
+        <div class="form-stack">
+          <div class="field"><label>Nome</label><input id="customer-name" placeholder="Nome completo"></div>
+          <div class="field"><label>Telefone</label><input id="customer-phone" placeholder="Telefone / WhatsApp"></div>
+          <div class="field"><label>Email</label><input id="customer-email" placeholder="Email"></div>
+          <div class="field"><label>Cidade / Bairro</label><input id="customer-city" placeholder="Cidade / bairro"></div>
+          <div class="field"><label>Forma de pagamento</label><select id="customer-payment"><option value="Pix">Pix</option><option value="Cartão">Cartão</option><option value="Mercado Pago">Mercado Pago</option><option value="A combinar">A combinar</option></select></div>
+          <div class="field"><label>Entrega</label><select id="customer-delivery"><option value="Retirada">Retirada</option><option value="Entrega">Entrega</option><option value="A combinar">A combinar</option></select></div>
+          <div class="field"><label>Observações</label><textarea id="customer-note" placeholder="Observações do pedido"></textarea></div>
+        </div>
+        <div class="action-row">
+          <button class="btn-add" id="finish-order">Enviar pedido</button>
+          <button class="btn-buy" id="pay-order">Ir para pagamento</button>
+        </div>
+        <div id="order-success" class="success">Pedido enviado com sucesso.</div>
+        <div id="order-error" class="error">Não foi possível enviar agora. Confira a implantação do Apps Script.</div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="wrap footer-grid">
+      <div><strong>SELVA COMBAT</strong><br>Equipamentos para quem entra para vencer.</div>
+      <div>Estrutura atualizada com novos produtos, novas categorias e catálogo pronto para expansão.</div>
+    </div>
+  </footer>
+
+  <script>
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxjPCuuWWcvRDsJAyaM2TjTwPmRBq67ZfYlTfTAsHaLuAkiYvQUV8j5E5OWJzOV_RDw/exec";
+    const MIN_ORDER = 100;
+
+    const categories = [
+      {id:"todos", label:"Todos", subtitle:"Ver catálogo completo"},
+      {id:"boxe-muaythai", label:"Boxe e Muay Thai", subtitle:"Luvas, caneleiras, bandagens e acessórios"},
+      {id:"jiu-jitsu", label:"Jiu-Jitsu", subtitle:"Kimonos e linha para expansão"},
+      {id:"bolsas-apetrechos", label:"Bolsas e apetrechos", subtitle:"Bolsas, aparadores e acessórios"},
+      {id:"kits", label:"Kits", subtitle:"Combinações prontas para ticket maior"},
+      {id:"roupas-moda", label:"Roupas e moda", subtitle:"Estrutura pronta para novos itens"}
+    ];
+
+    const products = [
+      {id:"olimpo-bandagem-5m",categoria:"boxe-muaythai",nome:"Bandagem Elástica 5 Metros - Boxe e Muay Thai",precoDe:70,precoPor:49,pagamento:"",descricao:"Item essencial para treino firme, proteção e preparação com mentalidade de combate.",opcoesTamanho:["Único"],opcoesCor:[{nome:"Padrão",arquivo:"boxe e muay thay/marca olimpo/bandagem/Bandagem Elástica 5 Metros - Boxe e Muay Thai"}]},
+      {id:"olimpo-bucal",categoria:"boxe-muaythai",nome:"Protetor Bucal Moldável com Estojo - Boxe e Muay Thai",precoDe:70,precoPor:49,pagamento:"",descricao:"Proteção prática para quem entra no treino com foco, disciplina e instinto de luta.",opcoesTamanho:["Único"],opcoesCor:[{nome:"Preto",arquivo:"boxe e muay thay/marca olimpo/protetor bucal/Protetor Bucal Moldável com Estojo - Boxe e Muay Thai"}]},
+      {id:"olimpo-aparador-focus",categoria:"bolsas-apetrechos",nome:"Aparador de Chute Focus Olimpo (Unidade)",precoDe:200,precoPor:189,pagamento:"",descricao:"Aparador de impacto para treino técnico e precisão. Presença forte para quem trabalha chute com intensidade.",opcoesTamanho:["Único"],opcoesCor:[
+        {nome:"Amarelo",arquivo:"bolsas e apetreços/olimpo/aparador/Aparador de Chute Focus Olimpo -amarelo"},
+        {nome:"Azul",arquivo:"bolsas e apetreços/olimpo/aparador/Aparador de Chute Focus Olimpo -azul"},
+        {nome:"Preto",arquivo:"bolsas e apetreços/olimpo/aparador/Aparador de Chute Focus Olimpo -preto"},
+        {nome:"Vermelho",arquivo:"bolsas e apetreços/olimpo/aparador/Aparador de Chute Focus Olimpo -vermelho"}
+      ]},
+      {id:"olimpo-bolsa-legendary",categoria:"bolsas-apetrechos",nome:"Bolsa Transversal Legendary",precoDe:310,precoPor:250,pagamento:"",descricao:"Bolsa com identidade premium para treino, viagem e rotina de atleta. Estilo forte e funcionalidade real.",opcoesTamanho:["Único"],opcoesCor:[
+        {nome:"Marrom",arquivo:"bolsas e apetreços/olimpo/bolsa/Bolsa Transversal Legendary -marrom"},
+        {nome:"Preto e Dourado",arquivo:"bolsas e apetreços/olimpo/bolsa/Bolsa Transversal Legendary -Preto e Dourado"},
+        {nome:"Preto e Prata",arquivo:"bolsas e apetreços/olimpo/bolsa/Bolsa Transversal Legendary -Preto e Prata"},
+        {nome:"Preto e Rosa",arquivo:"bolsas e apetreços/olimpo/bolsa/Bolsa Transversal Legendary -Preto e Rosa"}
+      ]},
+      {id:"mks-new-prospect",categoria:"boxe-muaythai",nome:"Luva de Boxe MKS New Prospect",precoDe:350,precoPor:309,pagamento:"",descricao:"Uma luva feita para evolução constante, proteção firme e presença forte em treino de boxe e muay thai.",opcoesTamanho:["10oz","12oz","14oz"],opcoesCor:[
+        {nome:"Prata",arquivo:"boxe e muay thay/marca mks/luva/Luva de Boxe MKS New Prospect - prata"},
+        {nome:"Azul",arquivo:"boxe e muay thay/marca mks/luva/Luva de Boxe MKS New Prospect - azul"},
+        {nome:"Preto",arquivo:"boxe e muay thay/marca mks/luva/Luva de Boxe MKS New Prospect - preto"},
+        {nome:"Vermelho",arquivo:"boxe e muay thay/marca mks/luva/Luva de Boxe MKS New Prospect - vermelho"}
+      ]},
+      {id:"mks-camo-series",categoria:"boxe-muaythai",nome:"Luva MKS Camo Series",precoDe:450,precoPor:399,pagamento:"",descricao:"Visual agressivo, pegada premium e identidade marcante para quem quer treinar com atitude.",opcoesTamanho:["10oz","12oz","14oz"],opcoesCor:[
+        {nome:"Camuflada verde",arquivo:"boxe e muay thay/marca mks/luva/Luva MKS Camo Series-camuflada"},
+        {nome:"Camuflada preta e branca",arquivo:"boxe e muay thay/marca mks/luva/Luva MKS Camo Series-camuflada preta e branca"}
+      ]},
+      {id:"mks-bandagem-kit",categoria:"boxe-muaythai",nome:"Bandagem Fita Protetora Elástica MKS 2,55m (1 Par) + Bucal Simples com estojo",precoDe:120,precoPor:99,pagamento:"",descricao:"Combo de entrada para proteção e preparação. Simples, funcional e pronto para treino forte.",opcoesTamanho:["Único"],opcoesCor:[{nome:"Padrão",arquivo:"boxe e muay thay/marca mks/bandagem/Bandagem Fita Protetora Elástica MKS 2,55m (1 Par) + Bucal Simples com estojo"}]},
+      {id:"mks-contender",categoria:"boxe-muaythai",nome:"Caneleira MKS Contender em Poliéster Elástico",precoDe:350,precoPor:299,pagamento:"",descricao:"Proteção leve e funcional para treinos consistentes com foco, ritmo e resistência.",opcoesTamanho:["M","G"],opcoesCor:[
+        {nome:"Preta",arquivo:"boxe e muay thay/marca mks/caneleira/Caneleira MKS Contender em Poliéster Elástico"},
+        {nome:"Preta 2",arquivo:"boxe e muay thay/marca mks/caneleira/Caneleira MKS Contender em Poliéster Elástico-1"}
+      ]},
+      {id:"mks-energy",categoria:"boxe-muaythai",nome:"Caneleira MKS Energy",precoDe:500,precoPor:449,pagamento:"",descricao:"Caneleira encorpada para treinos intensos, com cores marcantes e presença de marca forte.",opcoesTamanho:["P","M","G","GG"],opcoesCor:[
+        {nome:"Azul",arquivo:"boxe e muay thay/marca mks/caneleira/Caneleira MKS Energy-azul"},
+        {nome:"Branca",arquivo:"boxe e muay thay/marca mks/caneleira/Caneleira MKS Energy-branca"},
+        {nome:"Preta",arquivo:"boxe e muay thay/marca mks/caneleira/Caneleira MKS Energy-preta"},
+        {nome:"Rosa",arquivo:"boxe e muay thay/marca mks/caneleira/Caneleira MKS Energy-rosa"},
+        {nome:"Vermelha",arquivo:"boxe e muay thay/marca mks/caneleira/Caneleira MKS Energy-vermelha"},
+        {nome:"Guia de tamanho",arquivo:"boxe e muay thay/marca mks/caneleira/Caneleira MKS Energy1"}
+      ]},
+      {id:"kimono-mks-bjj350",categoria:"jiu-jitsu",nome:"Kimono MKS Jiu-Jitsu BJJ350",precoDe:530,precoPor:479,pagamento:"",descricao:"Kimono de jiu-jitsu com presença visual forte, ideal para treino diário e evolução constante no tatame.",opcoesTamanho:["A0","A1","A1.5","A2","A2.5","A3"],opcoesCor:[
+        {nome:"Preto",arquivo:"jiu jitsu/kimono/Kimono MKS Jiu-Jitsu BJJ350-preto"},
+        {nome:"Branco",arquivo:"jiu jitsu/kimono/Kimono MKS Jiu-Jitsu BJJ350-branco"},
+        {nome:"Azul",arquivo:"jiu jitsu/kimono/Kimono MKS Jiu-Jitsu BJJ350-azul"}
+      ]},
+      {id:"gorilla-aparador",categoria:"bolsas-apetrechos",nome:"Aparador De Chute Profissional Unidade Muay-Thai - Gorilla (unidade)",precoDe:250,precoPor:220,pagamento:"",descricao:"Aparador profissional para trabalho de precisão, volume e potência em treinos de muay thai.",opcoesTamanho:["Único"],opcoesCor:[
+        {nome:"Preto e laranja",arquivo:"bolsas e apetreços/gorilla/Aparador De Chute Profissional Unidade Muay-Thai - Gorilla"},
+        {nome:"Imagem 2",arquivo:"bolsas e apetreços/gorilla/Aparador De Chute Profissional Unidade Muay-Thai - Gorilla1"}
+      ]},
+      {id:"gorilla-capacete",categoria:"boxe-muaythai",nome:"Capacete Boxe Treino Muay Thai Protetor De Cabeça Gorilla",precoDe:310,precoPor:250,pagamento:"",descricao:"Proteção de cabeça para treino duro com visual forte e acabamento agressivo.",opcoesTamanho:["Único"],opcoesCor:[
+        {nome:"Preto",arquivo:"boxe e muay thay/gorilla/capacete/Capacete Boxe Treino Muay Thai Protetor De Cabeça Gorilla"},
+        {nome:"Imagem 2",arquivo:"boxe e muay thay/gorilla/capacete/Capacete Boxe Treino Muay Thai Protetor De Cabeça Gorilla1"}
+      ]},
+      {id:"gorilla-luva-intimidating",categoria:"boxe-muaythai",nome:"Luva De Boxe Muay Thai Intimidating Gorilla 12 Oz Profissional Black",precoDe:310,precoPor:249,pagamento:"https://mpago.la/2RgZkyL",descricao:"Luva com visual intimidante, assinatura Gorilla e pegada forte para treino de impacto e presença.",opcoesTamanho:["12oz"],opcoesCor:[
+        {nome:"Black",arquivo:"boxe e muay thay/gorilla/luva/Luva De Boxe Muay Thai Intimidating Gorilla 12 Oz Profissional Black"},
+        {nome:"Imagem 2",arquivo:"boxe e muay thay/gorilla/luva/Luva De Boxe Muay Thai Intimidating Gorilla 12 Oz Profissional Black1"}
+      ]},
+      {id:"gorilla-kit-feminino",categoria:"kits",nome:"Kit Feminino Luva de Muay Thai Rosa + Bolsa de Academia Transversal Gorilla",precoDe:410,precoPor:379,pagamento:"",descricao:"Kit feminino com identidade forte, visual marcante e combinação pronta para elevar ticket e desejo.",opcoesTamanho:["12oz"],opcoesCor:[
+        {nome:"Rosa",arquivo:"kits/gorila/Kit Feminino Luva de Muay Thai Rosa + Bolsa de Academia Transversal Gorilla"},
+        {nome:"Rosa 2",arquivo:"kits/gorila/Kit Feminino Luva de Muay Thai Rosa + Bolsa de Academia Transversal Gorilla1"},
+        {nome:"Rosa 3",arquivo:"kits/gorila/Kit Feminino Luva de Muay Thai Rosa + Bolsa de Academia Transversal Gorilla2"},
+        {nome:"Rosa 4",arquivo:"kits/gorila/Kit Feminino Luva de Muay Thai Rosa + Bolsa de Academia Transversal Gorilla3"},
+        {nome:"Rosa 5",arquivo:"kits/gorila/Kit Feminino Luva de Muay Thai Rosa + Bolsa de Academia Transversal Gorilla4"}
+      ]},
+      {id:"gorilla-bolsa-academia",categoria:"bolsas-apetrechos",nome:"Bolsa Transversal Academia Mochila Kimono Muay Thai Gorilla",precoDe:310,precoPor:260,pagamento:"",descricao:"Bolsa de treino com visual funcional e forte presença para quem vive a rotina da luta.",opcoesTamanho:["Único"],opcoesCor:[
+        {nome:"Preto",arquivo:"bolsas e apetreços/gorilla/Bolsa Transversal Academia Mochila Kimono Muay Thai Gorilla"},
+        {nome:"Imagem 2",arquivo:"bolsas e apetreços/gorilla/Bolsa Transversal Academia Mochila Kimono Muay Thai Gorilla1"}
+      ]},
+      {id:"scorpions-luva-bandagem",categoria:"boxe-muaythai",nome:"Luva Muay Thai Boxe Kickboxing + 1 Par de Bandagens de 3 metros",precoDe:200,precoPor:159,pagamento:"",descricao:"Produto forte de entrada com ótima percepção de valor para quem quer começar já com proteção e impacto visual.",opcoesTamanho:["10oz","12oz","14oz"],opcoesCor:[
+        {nome:"Preta",arquivo:"boxe e muay thay/scorpions/luva/Luva Muay Thai Boxe Kickboxing + 1 Par de Bandagens de 3 metros-preta"},
+        {nome:"Vermelha",arquivo:"boxe e muay thay/scorpions/luva/Luva Muay Thai Boxe Kickboxing + 1 Par de Bandagens de 3 metros-vermelha"},
+        {nome:"Rosa",arquivo:"boxe e muay thay/scorpions/luva/Luva Muay Thai Boxe Kickboxing + 1 Par de Bandagens de 3 metros-rosa"}
+      ]},
+      {id:"scorpions-dois-pares",categoria:"kits",nome:"Dois Pares de Luvas De Boxe Muay Thai (preto e rosa, preto e branco)",precoDe:300,precoPor:249,pagamento:"",descricao:"Kit pensado para compra em dupla, aula em conjunto ou presente com forte apelo de valor.",opcoesTamanho:["10oz","12oz","14oz"],opcoesCor:[{nome:"Preto e rosa / preto e branco",arquivo:"kits/scorpions/Dois Pares de Luvas De Boxe Muay Thai (preto e rosa, preto e branco)"}]},
+      {id:"scorpions-kit-completo",categoria:"kits",nome:"Kit Luva Muay Thai Boxe kickboxing + Bandagem + Bucal + Bolsa + Caneleira",precoDe:400,precoPor:339,pagamento:"",descricao:"Kit completo para elevar ticket médio e acelerar decisão de compra com alto valor percebido.",opcoesTamanho:["10oz","12oz","14oz"],opcoesCor:[
+        {nome:"Vermelho",arquivo:"kits/scorpions/Kit Luva Muay Thai Boxe kickboxing + Bandagem + Bucal + Bolsa + Caneleira-vermelho"},
+        {nome:"Rosa",arquivo:"kits/scorpions/Kit Luva Muay Thai Boxe kickboxing + Bandagem + Bucal + Bolsa + Caneleira-rosa"},
+        {nome:"Branco",arquivo:"kits/scorpions/Kit Luva Muay Thai Boxe kickboxing + Bandagem + Bucal + Bolsa + Caneleira-branco"}
+      ]},
+      {id:"scorpions-bandagem-3m",categoria:"boxe-muaythai",nome:"Bandagem Elástica 3 Metros Muay Thai",precoDe:60,precoPor:45,pagamento:"",descricao:"Bandagem de giro rápido para proteção, combinação de cores e excelente produto de entrada.",opcoesTamanho:["Único"],opcoesCor:[
+        {nome:"Preto",arquivo:"boxe e muay thay/scorpions/bandagem/Luva Muay Thai Boxe Kickboxing + 1 Par de Bandagens de 3 metros-preta"},
+        {nome:"Rosa",arquivo:"boxe e muay thay/scorpions/bandagem/Bandagem Elástica 3 Metros Muay Thai-rosa"},
+        {nome:"Vermelho",arquivo:"boxe e muay thay/scorpions/bandagem/Bandagem Elástica 3 Metros Muay Thai-vermelho"},
+        {nome:"Azul",arquivo:"boxe e muay thay/scorpions/bandagem/Bandagem Elástica 3 Metros Muay Thai-azul"}
+      ]},
+      {id:"power-x",categoria:"boxe-muaythai",nome:"Luva de Boxe e Muay Thai Power-X",precoDe:259,precoPor:229,pagamento:"",descricao:"Criada para quem treina com intensidade e entra em combate com atitude. Proteção, presença e espírito de luta em cada combinação.",opcoesTamanho:["10oz","12oz","14oz"],opcoesCor:[
+        {nome:"Rosa e branca",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Boxe e Muay Thai Power-X - rosa e branca"},
+        {nome:"Branco e Azul",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Boxe e Muay Thai Power-X - Branco e Azul 1"},
+        {nome:"Preto e vermelho",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Boxe e Muay Thai Power-X - preto e vermelho"},
+        {nome:"Preto e rosa",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Boxe e Muay Thai Power-X - preto e rosa"},
+        {nome:"Preto e azul",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Boxe e Muay Thai Power-X - preto e azul"},
+        {nome:"Preto e Branco",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Boxe e Muay Thai Power-X - Preto e Branco"},
+        {nome:"Branco e Vermelho",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Boxe e Muay Thai Power-X - Branco e Vermelho"},
+        {nome:"Branco e dourado",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Boxe e Muay Thai Power-X - Branco e dourado"},
+        {nome:"Branco e preto",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Boxe e Muay Thai Power-X - Branco e preto"},
+        {nome:"Guia de tamanho",arquivo:"boxe e muay thay/marca olimpo/luvas/utlima imagem de luva"}
+      ]},
+      {id:"legendary-glove",categoria:"boxe-muaythai",nome:"Luva de Muay Thai Legendary",precoDe:359,precoPor:299,pagamento:"",descricao:"Uma luva com assinatura premium, resistência visual e mentalidade de atleta que entra para vencer.",opcoesTamanho:["10oz","12oz","14oz"],opcoesCor:[
+        {nome:"Branca e dourada",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Muay Thai e Boxe Legendary Edition branca"},
+        {nome:"Azul e dourado",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Muay Thai e Boxe Legendary Edition azul"},
+        {nome:"Laranja",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Muay Thai e Boxe Legendary Edition laranja"},
+        {nome:"Lilás",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Muay Thai e Boxe Legendary Edition lilas"},
+        {nome:"Preto e prata",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Muay Thai e Boxe Legendary Edition preto e branco"},
+        {nome:"Preto e dourado",arquivo:"boxe e muay thay/marca olimpo/luvas/Luva de Muay Thai e Boxe Legendary Edition preto"},
+        {nome:"Guia de tamanho",arquivo:"boxe e muay thay/marca olimpo/luvas/utlima imagem de luva"}
+      ]},
+      {id:"legendary-shinguard",categoria:"boxe-muaythai",nome:"Caneleira de Muay Thai Legendary",precoDe:459,precoPor:399,pagamento:"",descricao:"Proteção firme para quem luta com garra. Desenvolvida para suportar treinos intensos, com a força da selva em cada detalhe.",opcoesTamanho:["P","M","G"],opcoesCor:[
+        {nome:"Azul e dourado",arquivo:"boxe e muay thay/marca olimpo/caneleiras/Caneleira de Muay Thai Legendary azul"},
+        {nome:"Branco e dourado",arquivo:"boxe e muay thay/marca olimpo/caneleiras/Caneleira de Muay Thai Legendary branca e dourada"},
+        {nome:"Branco e rosa",arquivo:"boxe e muay thay/marca olimpo/caneleiras/Caneleira de Muay Thai Legendary branca e rosa"},
+        {nome:"Laranja e preto",arquivo:"boxe e muay thay/marca olimpo/caneleiras/Caneleira de Muay Thai Legendary laranja"},
+        {nome:"Preto e dourado",arquivo:"boxe e muay thay/marca olimpo/caneleiras/Caneleira de Muay Thai Legendary preta"},
+        {nome:"Vermelho e dourado",arquivo:"boxe e muay thay/marca olimpo/caneleiras/Caneleira de Muay Thai Legendary vermelha"},
+        {nome:"Guia de tamanho",arquivo:"boxe e muay thay/marca olimpo/caneleiras/caneleiras usar como ultima imagem em todas as foto"}
+      ]}
+    ];
+
+    let currentCategory = "todos";
+    let cart = [];
+
+    function money(v){ return Number(v).toLocaleString("pt-BR",{style:"currency",currency:"BRL"}); }
+
+    function candidateImagePaths(baseName){
+      const raw = String(baseName || "").trim();
+      if(!raw) return [];
+      const noExt = raw.replace(/\.(jfif|jpg|jpeg|png)$/i, "");
+      return [
+        `${noExt}.jfif`,`${noExt}.jpg`,`${noExt}.jpeg`,`${noExt}.png`,
+        `${noExt.replace(/ç/g,'c').replace(/ã/g,'a').replace(/á/g,'a').replace(/é/g,'e').replace(/ê/g,'e')}.jfif`,
+        `${noExt.replace(/ç/g,'c').replace(/ã/g,'a').replace(/á/g,'a').replace(/é/g,'e').replace(/ê/g,'e')}.jpg`,
+        `${noExt.replace(/ç/g,'c').replace(/ã/g,'a').replace(/á/g,'a').replace(/é/g,'e').replace(/ê/g,'e')}.jpeg`,
+        `${noExt.replace(/ç/g,'c').replace(/ã/g,'a').replace(/á/g,'a').replace(/é/g,'e').replace(/ê/g,'e')}.png`
+      ];
+    }
+
+    function createFallbackNode(text){
+      const div = document.createElement("div");
+      div.className = "img-fallback";
+      div.textContent = `Imagem não encontrada: ${text}`;
+      return div;
+    }
+
+    function createImageWithFallback(baseName, alt){
+      const img = document.createElement("img");
+      img.alt = alt;
+      const tries = candidateImagePaths(baseName);
+      let idx = 0;
+      img.src = tries[idx];
+      img.onerror = function(){
+        idx += 1;
+        if(idx < tries.length) img.src = tries[idx];
+        else img.replaceWith(createFallbackNode(alt));
+      };
+      return img;
+    }
+
+    function renderCategories(){
+      const categoryGrid = document.getElementById("category-grid");
+      const chips = document.getElementById("chips");
+      categoryGrid.innerHTML = categories.filter(c => c.id !== "todos").map(cat => `<button class="category-card ${currentCategory===cat.id?'active':''}" onclick="setCategory('${cat.id}')"><strong>${cat.label}</strong><span>${cat.subtitle}</span></button>`).join("");
+      chips.innerHTML = categories.map(cat => `<button class="chip ${currentCategory===cat.id?'active':''}" onclick="setCategory('${cat.id}')">${cat.label}</button>`).join("");
+    }
+
+    function setCategory(category){
+      currentCategory = category;
+      renderCategories();
+      renderProducts();
+      document.getElementById('produtos').scrollIntoView({behavior:'smooth'});
+    }
+
+    function filteredProducts(){
+      const term = (document.getElementById("search").value + " " + document.getElementById("top-search").value).toLowerCase().trim();
+      const sort = document.getElementById("sort").value;
+      let list = [...products].filter(item => {
+        const catOk = currentCategory === "todos" || item.categoria === currentCategory;
+        const termOk = !term || item.nome.toLowerCase().includes(term) || item.categoria.toLowerCase().includes(term) || item.descricao.toLowerCase().includes(term);
+        return catOk && termOk;
+      });
+      if(sort === "menor") list.sort((a,b)=>a.precoPor-b.precoPor);
+      if(sort === "maior") list.sort((a,b)=>b.precoPor-a.precoPor);
+      if(sort === "nome") list.sort((a,b)=>a.nome.localeCompare(b.nome));
+      return list;
+    }
+
+    function renderProducts(){
+      const grid = document.getElementById("product-grid");
+      const list = filteredProducts();
+      if(!list.length){
+        grid.innerHTML = '<div class="panel" style="grid-column:1/-1">Nenhum produto encontrado nesta categoria ainda. A estrutura já está pronta para você adicionar os próximos itens.</div>';
+        return;
+      }
+      grid.innerHTML = "";
+      list.forEach(product => {
+        const card = document.createElement("div");
+        card.className = "product-card";
+
+        const imageBox = document.createElement("div");
+        imageBox.className = "product-image";
+        imageBox.appendChild(createImageWithFallback(product.opcoesCor[0].arquivo, product.nome));
+
+        const thumbs = document.createElement("div");
+        thumbs.className = "thumbs";
+        product.opcoesCor.forEach((cor,index)=>{
+          const thumbBtn = document.createElement("button");
+          if(index===0) thumbBtn.classList.add("active");
+          thumbBtn.appendChild(createImageWithFallback(cor.arquivo, cor.nome));
+          thumbBtn.addEventListener("click",()=>{
+            [...thumbs.children].forEach(btn=>btn.classList.remove("active"));
+            thumbBtn.classList.add("active");
+            imageBox.innerHTML = "";
+            imageBox.appendChild(createImageWithFallback(cor.arquivo, `${product.nome} - ${cor.nome}`));
+          });
+          thumbs.appendChild(thumbBtn);
+        });
+
+        const body = document.createElement("div");
+        body.className = "product-body";
+        body.innerHTML = `<div class="badge">${categories.find(c=>c.id===product.categoria)?.label || 'Produto'}</div><h3 class="product-title">${product.nome}</h3><p class="product-desc">${product.descricao}</p><div class="price-row"><div class="old">de ${money(product.precoDe)}</div><div class="new">por ${money(product.precoPor)}</div></div>`;
+
+        const stack = document.createElement("div");
+        stack.className = "form-stack";
+
+        const colorField = document.createElement("div");
+        colorField.className = "field";
+        colorField.innerHTML = "<label>Cor</label>";
+        const colorSelect = document.createElement("select");
+        product.opcoesCor.forEach(cor => {
+          const option = document.createElement("option");
+          option.value = cor.nome;
+          option.textContent = cor.nome;
+          colorSelect.appendChild(option);
+        });
+        colorField.appendChild(colorSelect);
+
+        const sizeField = document.createElement("div");
+        sizeField.className = "field";
+        sizeField.innerHTML = "<label>Tamanho</label>";
+        const sizeSelect = document.createElement("select");
+        product.opcoesTamanho.forEach(t => {
+          const option = document.createElement("option");
+          option.value = t;
+          option.textContent = t;
+          sizeSelect.appendChild(option);
+        });
+        sizeField.appendChild(sizeSelect);
+
+        const qtyField = document.createElement("div");
+        qtyField.className = "field";
+        qtyField.innerHTML = "<label>Quantidade</label>";
+        const qtyInput = document.createElement("input");
+        qtyInput.type = "number";
+        qtyInput.min = "1";
+        qtyInput.value = "1";
+        qtyField.appendChild(qtyInput);
+
+        stack.appendChild(colorField);
+        stack.appendChild(sizeField);
+        stack.appendChild(qtyField);
+
+        const actionRow = document.createElement("div");
+        actionRow.className = "action-row";
+        const addBtn = document.createElement("button");
+        addBtn.className = "btn-add";
+        addBtn.textContent = "Adicionar";
+        addBtn.addEventListener("click",()=>addToCart(product,colorSelect.value,sizeSelect.value,Math.max(1,Number(qtyInput.value||1))));
+        const buyBtn = document.createElement("button");
+        buyBtn.className = "btn-buy";
+        buyBtn.textContent = "Comprar agora";
+        buyBtn.disabled = false;
+        buyBtn.style.opacity = "1";
+        buyBtn.addEventListener("click",()=>comprarAgora(product,colorSelect.value,sizeSelect.value,Math.max(1,Number(qtyInput.value||1))));
+        actionRow.appendChild(addBtn);
+        actionRow.appendChild(buyBtn);
+
+        body.appendChild(stack);
+        body.appendChild(actionRow);
+        card.appendChild(imageBox);
+        card.appendChild(thumbs);
+        card.appendChild(body);
+        grid.appendChild(card);
+      });
+    }
+
+    function addToCart(product,cor,tamanho,quantidade){
+      const key = `${product.id}-${cor}-${tamanho}`;
+      const existing = cart.find(item=>item.key===key);
+      if(existing) existing.quantidade += quantidade;
+      else cart.push({key,id:product.id,nome:product.nome,cor,tamanho,quantidade,preco:product.precoPor,pagamento:product.pagamento});
+      renderCart();
+      document.getElementById('carrinho').scrollIntoView({behavior:'smooth'});
+    }
+
+    function updateCartItem(key,delta){
+      cart = cart.map(item=>item.key===key?{...item,quantidade:item.quantidade+delta}:item).filter(item=>item.quantidade>0);
+      renderCart();
+    }
+
+    function removeCartItem(key){
+      cart = cart.filter(item=>item.key!==key);
+      renderCart();
+    }
+
+    function cartTotal(){ return cart.reduce((sum,item)=>sum + item.preco * item.quantidade,0); }
+
+    function renderCart(){
+      const count = cart.reduce((sum,item)=>sum+item.quantidade,0);
+      document.getElementById("cart-count").textContent = count;
+      const itemsWrap = document.getElementById("cart-items");
+      const summary = document.getElementById("summary");
+      const total = cartTotal();
+      const minimumOk = total >= MIN_ORDER;
+      document.getElementById("cart-warning").style.display = !minimumOk && total > 0 ? "block" : "none";
+
+      if(!cart.length){
+        itemsWrap.innerHTML = '<div class="cart-item">Seu carrinho está vazio.</div>';
+        summary.innerHTML = `<div class="cart-line"><span>Subtotal</span><strong>${money(0)}</strong></div><div class="cart-line"><span>Pedido mínimo</span><span>${money(MIN_ORDER)}</span></div><div class="cart-line"><span>Total</span><strong>${money(0)}</strong></div>`;
+        return;
+      }
+
+      itemsWrap.innerHTML = cart.map(item=>`<div class="cart-item"><strong>${item.nome}</strong><div class="cart-line"><span>Cor</span><span>${item.cor}</span></div><div class="cart-line"><span>Tamanho</span><span>${item.tamanho}</span></div><div class="cart-line"><span>Preço unitário</span><span>${money(item.preco)}</span></div><div class="qty"><button onclick="updateCartItem('${item.key}', -1)">-</button><strong>${item.quantidade}</strong><button onclick="updateCartItem('${item.key}', 1)">+</button><button class="btn-add" style="width:auto;padding:8px 12px" onclick="removeCartItem('${item.key}')">Remover</button></div><div class="cart-line"><strong>Total do item</strong><strong>${money(item.preco * item.quantidade)}</strong></div></div>`).join("");
+      summary.innerHTML = `<div class="cart-line"><span>Subtotal</span><strong>${money(total)}</strong></div><div class="cart-line"><span>Pedido mínimo</span><span>${money(MIN_ORDER)}</span></div><div class="cart-line"><span>Entrega</span><span>A combinar</span></div><div class="cart-line"><span>Total</span><strong>${money(total)}</strong></div>`;
+    }
+
+    async function sendToSheet(payload){
+      if(!APPS_SCRIPT_URL) throw new Error("Apps Script URL não configurada");
+      await fetch(APPS_SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
+      return {status:"ok"};
+    }
+
+    function hideMessages(){
+      ["order-success","order-error"].forEach(id=>{const el=document.getElementById(id); if(el) el.style.display="none";});
+    }
+
+    async function comprarAgora(product, cor, tamanho, quantidade){
+      const nome = prompt("Digite seu nome completo:");
+      if(!nome) return;
+      const email = prompt("Digite seu e-mail:");
+      if(!email) return;
+      try{
+        const response = await fetch(APPS_SCRIPT_URL,{
+          method:"POST",
+          headers:{"Content-Type":"text/plain;charset=utf-8"},
+          body:JSON.stringify({
+            action:"criarPagamento",
+            produto:product.nome,
+            preco:product.precoPor,
+            quantidade:quantidade,
+            nome:nome,
+            email:email,
+            cor:cor,
+            tamanho:tamanho
+          })
+        });
+        const data = await response.json();
+        if(data.link){
+          window.location.href = data.link;
+          return;
+        }
+        alert("Não foi possível gerar o checkout.");
+      }catch(error){
+        console.error(error);
+        alert("Erro ao conectar com o Checkout Pro.");
+      }
+    }
+
+    async function submitOrder(){
+      hideMessages();
+      const nome = document.getElementById("customer-name").value.trim();
+      const telefone = document.getElementById("customer-phone").value.trim();
+      const email = document.getElementById("customer-email").value.trim();
+      const cidade = document.getElementById("customer-city").value.trim();
+      const pagamento = document.getElementById("customer-payment").value;
+      const entrega = document.getElementById("customer-delivery").value;
+      const observacoes = document.getElementById("customer-note").value.trim();
+      const total = cartTotal();
+      if(!nome || !telefone){ alert("Preencha nome e telefone para finalizar o pedido."); return; }
+      if(!cart.length){ alert("Adicione pelo menos 1 produto ao carrinho."); return; }
+      if(total < MIN_ORDER){ alert(`O pedido mínimo é de ${money(MIN_ORDER)}.`); return; }
+      const payload = {action:"novoPedido",aluno:{nome,telefone,email,cidade,observacoes},pedido:{pagamento,entrega,total,itens:cart.map(item=>({produto:item.nome,cor:item.cor,tamanho:item.tamanho,quantidade:item.quantidade,preco:item.preco,subtotal:item.preco*item.quantidade}))}};
+      try{ await sendToSheet(payload); document.getElementById("order-success").style.display = "block"; }
+      catch(error){ console.error(error); document.getElementById("order-error").style.display = "block"; }
+    }
+
+    async function payOrder(){
+      const total = cartTotal();
+      if(!cart.length){ alert("Adicione pelo menos 1 produto ao carrinho."); return; }
+      if(total < MIN_ORDER){ alert(`O pedido mínimo é de ${money(MIN_ORDER)}.`); return; }
+      if(cart.length > 1){ alert("Nesta versão, o checkout está ativo no botão Comprar agora de cada produto. O checkout do carrinho completo será a próxima etapa."); return; }
+      const item = cart[0];
+      await comprarAgora({nome:item.nome,precoPor:item.preco}, item.cor, item.tamanho, item.quantidade);
+    }
+
+    document.getElementById("search").addEventListener("input",renderProducts);
+    document.getElementById("top-search").addEventListener("input",renderProducts);
+    document.getElementById("sort").addEventListener("change",renderProducts);
+    document.getElementById("finish-order").addEventListener("click",submitOrder);
+    document.getElementById("pay-order").addEventListener("click",payOrder);
+
+    renderCategories();
+    renderProducts();
+    renderCart();
+  </script>
+</body>
+</html>
